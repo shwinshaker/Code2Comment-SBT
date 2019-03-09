@@ -1,4 +1,4 @@
-from dataloader import load_input_label
+from music_dataloader import load_input_label
 from lstm import build_model, Evaluation, check_cuda, DIM
 from utils import String_Encoder
 import torch
@@ -95,11 +95,11 @@ def main():
 
     # hyperparameters
     # init note -> try anything, but start with <start>
-    # init_notes = load_input_label('pa4Data/test.txt')[0][:110] # <start>
-    init_notes = '<QUE>\nWhat is the meaning of life?\n<ANS>'
+    init_notes = '<QUE>\n# initialize parameters\n<ANS>'
+    #<QUE>' #\nWhat is the meaning of life?\n<ANS>'
     sampling = 'random' # 'argmax'
     temperature = 0.5 # avaible if sampling is random
-    length = 400 # length of generated music sheet
+    length = 1000 # length of generated music sheet
 
     print('---> check cuda')
     use_cuda, device, extras = check_cuda()
@@ -128,6 +128,7 @@ def main():
                                                   device=device)
     notes_s = [s.replace('\n', '\\n') for s in list(notes)]
     notes_r = ' '.join([n+':'+c for n, c in zip(notes_s, confs.split())])
+    print()
     print(notes,end='\n\n')
     with open("music.txt", "w") as f:
         f.write(notes)
