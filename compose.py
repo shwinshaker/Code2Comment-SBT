@@ -1,4 +1,4 @@
-from music_dataloader import load_input_label
+from dataloader import load_input_label
 from lstm import build_model, Evaluation, check_cuda, DIM
 from utils import String_Encoder
 import torch
