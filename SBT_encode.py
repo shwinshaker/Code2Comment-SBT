@@ -188,44 +188,37 @@ class Encoder():
     def __invert(self, d):
         return dict([(y,x) for x, y in d.items()])
         
-    def __one_hot_encode(self, number):
-        arr = np.zeros(len(self.vocab_dict))
-        arr[number] = 1
-        return arr
-    
-    def __one_hot_decode(self, arr):
-        index = np.argwhere(arr == 1).squeeze().tolist()
-        assert(type(index) is int)
-        return index
-        
     def encode(self, code):
         sbt = Sbt(self.name_vocab)
         sbt(str2json(code))
-        return [self.__one_hot_encode(self.vocab_dict[seg]) for seg in sbt.seq]
+        return [self.vocab_dict[token] for token in sbt.seq]
         
     def decode(self, seq):
         # to sbt tree
-        return ''.join([self.invert_dict[self.__one_hot_decode(arr)] for arr in seq])
+        return ''.join([self.invert_dict[index] for index in seq])
 
 
 if __name__ == '__main__':
     # traverse the entire train set, build vocabulary for segments in sbt sequences
-    print('--- build vocab..')
-    build_vocab()
+    # already built
+    # print('--- build vocab..')
+    # build_vocab()
 
-    # print('\n-- encode example..')
-    # one-hot encoding example
-    # with open('comment_code.pkl', 'rb') as f:
-    #     data = pickle.load(f)
-    # encoder = Encoder()
-    # print('original code:')
-    # print(data[1][1], end='\n\n')
+    # encoding example
+    print('\n> Encode example:\n')
+    with open('comment_code.pkl', 'rb') as f:
+        data = pickle.load(f)
+    # Select the 2nd datus as exmaple
+    comment, code = data[1]
+    encoder = Encoder()
+    print('-------- Original code --------')
+    print(code, end='\n\n')
 
-    # print('sbt representation:')
-    # print(encoder.decode(encoder.encode(data[1][1])), end='\n\n')
+    print('-------- sbt representation --------')
+    print(encoder.decode(encoder.encode(code)), end='\n\n')
 
-    # print('one-hot encoding:')
-    # print(encoder.encode(data[1][1]))
+    print('-------- encoded code --------')
+    print(encoder.encode(code))
 
 
 
