@@ -206,10 +206,10 @@ if __name__ == '__main__':
 
     # encoding example
     print('\n> Encode example:\n')
-    with open('comment_code.pkl', 'rb') as f:
+    with open('data/train.pkl', 'rb') as f:
         data = pickle.load(f)
     # Select the 2nd datus as exmaple
-    comment, code = data[1]
+    comment, code = data[0]
     encoder = Encoder()
     print('-------- Original code --------')
     print(code, end='\n\n')
