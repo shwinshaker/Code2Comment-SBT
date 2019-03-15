@@ -7,6 +7,9 @@ import pickle
 import numpy as np
 
 
+REMOVED = ['col_offset', 'lineno']
+USER_DEFINED = ['name', 'id', 'attr', 'arg', 'module', 's', 'n']
+
 class Traverse():
     def __init__(self):
         self.args = {}
@@ -32,10 +35,10 @@ class Traverse():
                 self(node_)
         elif type(node) is dict:
             for key in node:
-                if key not in ['col_offset', 'lineno']:
+                if key not in REMOVED:
                     self.__save_args(key)
                     if type(node[key]) not in [dict, list]:
-                        if key in ['name', 'id', 'attr', 'arg', 's', 'n']:
+                        if key in USER_DEFINED:
                             self.__save_names(node[key])
                         else:
                             self.__save_args(node[key])
@@ -79,10 +82,10 @@ class Sbt():
                         self.seq.append(')')
                 else:
                     for key in node:
-                        if not key in ['col_offset', 'lineno']:
+                        if not key in REMOVED:
                             # these two keys are not very useful
                             if type(node[key]) not in [dict, list]:
-                                if key in ['name', 'id', 'attr', 'arg', 's', 'n']:
+                                if key in USER_DEFINED:
                                     # these are self-defined names
                                     if str(node[key]) in self.vocab:
                                         # if name is common, include it
@@ -104,14 +107,19 @@ class Sbt():
                                     self.seq.append(')')
 
 
-def build_vocab(name_vocab_length=200):
-    with open('comment_code.pkl', 'rb') as f:
+def build_vocab(filename='data/train.pkl', name_vocab_length=2000):
+    with open(filename, 'rb') as f:
         text = pickle.load(f)
 
     def __print_common(common):
+        print('\t', end='')
         for name, count in common:
             print('%s: %i' % (name, count), end=' ')
         print()
+
+    def ___counter_length(c):
+        _, values = zip(*c.most_common())
+        return reduce(lambda x,y: x+y, values)
         
     print('----- frequently self-defined names ------')
     # build frequently-used self-defined vocab
@@ -122,16 +130,21 @@ def build_vocab(name_vocab_length=200):
         traverse(str2json(code))
     c = Counter(traverse.names)
     assert(len(c.most_common()) == len(traverse.names))
-    names, values = zip(*c.most_common())
-    print('# words: %i' % reduce(lambda x,y: x+y, values))
-    print('# unique words: %i' % len(c.most_common()))
+    print('# names: %i' % ___counter_length(c))
+    print('# unique names: %i' % len(c.most_common()))
+
+    c_arg = Counter(traverse.args)
+    print('# arguments: %i' % ___counter_length(c_arg))
+    print('# unique arguments: %i' % len(c_arg.most_common()))
 
     # get the most frequently words as vocab
     c_vocab = Counter(dict(c.most_common(name_vocab_length)))
-    print('Most frequent 5 words:')
+    print('Most frequent 5 names:')
     __print_common(c_vocab.most_common(5))
-    print('Least frequent 5 words:')
+    print('Least frequent 5 names:')
     __print_common(c_vocab.most_common()[-5:])
+
+    print('\nSelect the most frequent %i names' % name_vocab_length)
     
     # save for frequent use
     name_vocab, _ = zip(*c_vocab.most_common())
@@ -200,19 +213,19 @@ if __name__ == '__main__':
     print('--- build vocab..')
     build_vocab()
 
-    print('\n-- encode example..')
+    # print('\n-- encode example..')
     # one-hot encoding example
-    with open('comment_code.pkl', 'rb') as f:
-        data = pickle.load(f)
-    encoder = Encoder()
-    print('original code:')
-    print(data[1][1], end='\n\n')
+    # with open('comment_code.pkl', 'rb') as f:
+    #     data = pickle.load(f)
+    # encoder = Encoder()
+    # print('original code:')
+    # print(data[1][1], end='\n\n')
 
-    print('sbt representation:')
-    print(encoder.decode(encoder.encode(data[1][1])), end='\n\n')
+    # print('sbt representation:')
+    # print(encoder.decode(encoder.encode(data[1][1])), end='\n\n')
 
-    print('one-hot encoding:')
-    print(encoder.encode(data[1][1]))
+    # print('one-hot encoding:')
+    # print(encoder.encode(data[1][1]))
 
 
 
