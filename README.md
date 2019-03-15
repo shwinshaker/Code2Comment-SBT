@@ -18,11 +18,15 @@ To encode code using SBT, we need following steps:
 * encode and decode using one-hot or other embedding. Trivial thing.
 
 **Classes**
+
 `Travese`: traverse an AST tree, save all unique arguments (Code attributes) and names (User-defined names)
+
 `Sbt`: traverse an AST tree, convert to SBT format.
+
 `Encoder`: Tool to encode a piece of code. Requires two files, `vocab_dict.pkl`, the SBT tokens vocabulary, and `frequently_used_name.pkl`, 'namespace' vocabulary. The latter is required because SBT treats frequent and rare user-defined names differently.
 
 **Functions**
+
 `build_vocab`: read the cleaned train data `data/train.pkl`, do name traverse then SBT traverse, generate respective files `frequently_used_name.pkl` and `vocab_dict.pkl`.
 
 
