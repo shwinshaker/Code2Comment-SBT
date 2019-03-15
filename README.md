@@ -4,7 +4,8 @@ CS253 Final
 ## Parse
 Some raw codes are in python2, or simply cannot be parsed to AST. So check all records if AST feasible, then remove failures. Note python2 code will be converted to python3 and then saved.
 
-**Usage**<br />
+**Usage**
+
 `python code_parse.py`
 
 This will check `train.txt`, `valid.txt` and `test.txt` in a `raw_data` dir, and save all feasible records as pickle to a new dir `data`, filename respectively.
@@ -18,7 +19,8 @@ To encode code using SBT, we need following steps:
 
 * encode and decode using one-hot or other embedding. Trivial thing.
 
-**Usage**<br />
+**Usage**
+
 `python SBT_encode.py`
 
 This will call `build_vocab` and build the vocabulary.
