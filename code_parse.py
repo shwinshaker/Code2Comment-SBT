@@ -38,7 +38,7 @@ def code_parse(filename):
             # convert to python3
             with open('snippet.py', 'w+') as f:
                 f.write(code)
-            os.system('2to3 -w snippet.py 1>/dev/null 2>1')
+            os.system('2to3 -w snippet.py 1>/dev/null 2>&1')
             code = open('snippet.py').read()
             try:
                 code_js = str2json(code)
