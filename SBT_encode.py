@@ -14,21 +14,21 @@ class Traverse():
     def __init__(self):
         self.args = {}
         self.names = {}
-        
+
     def __save_args(self, s):
         s_ = str(s)
         if s_ not in self.args:
             self.args[s_] = 1
         else:
             self.args[s_] += 1
-    
+
     def __save_names(self, s):
         s_ = str(s)
         if s_ not in self.names:
             self.names[s_] = 1
         else:
             self.names[s_] += 1
-        
+
     def __call__(self, node):
         if type(node) is list:
             for node_ in node:
@@ -50,12 +50,12 @@ class Sbt():
     def __init__(self, vocab):
         self.seq = []
         self.vocab = vocab
-        
+
     def __remove_key(seld, d, key):
         d_ = deepcopy(d)
         del d_[key]
         return d_
-        
+
     def __call__(self, node):
         if type(node) is list:
             if node:
@@ -120,7 +120,7 @@ def build_vocab(filename='data/train.pkl', name_vocab_length=2000):
     def ___counter_length(c):
         _, values = zip(*c.most_common())
         return reduce(lambda x,y: x+y, values)
-        
+
     print('----- frequently self-defined names ------')
     # build frequently-used self-defined vocab
     # limit to [id, name, attr, arg, s, n]
@@ -145,7 +145,7 @@ def build_vocab(filename='data/train.pkl', name_vocab_length=2000):
     __print_common(c_vocab.most_common()[-5:])
 
     print('\nSelect the most frequent %i names' % name_vocab_length)
-    
+
     # save for frequent use
     name_vocab, _ = zip(*c_vocab.most_common())
     with open('frequently_used_name.pkl', 'wb+') as f:
@@ -162,13 +162,16 @@ def build_vocab(filename='data/train.pkl', name_vocab_length=2000):
         print(i, end='\r')
         sbt(str2json(code))
     c = Counter(sbt.seq)
+    # add all traversed keys into vocabulary
+    c.update(traverse.args)
+
     print('# sequences: %i' % i)
     print('# segments: %i' % len(sbt.seq))
-    print('# unique segments: %i' % len(c.most_common()))        
+    print('# unique segments: %i' % len(c.most_common()))
     print('Most frequent 5 segments:')
     __print_common(c.most_common(5))
     print('Least frequent 5 segments:')
-    __print_common(c.most_common()[-5:])   
+    __print_common(c.most_common()[-5:])
 
     # save for frequent use
     segs, _ = zip(*c.most_common())
@@ -184,15 +187,27 @@ class Encoder():
         with open('frequently_used_name.pkl', 'rb') as f:
             self.name_vocab = pickle.load(f)
         self.invert_dict = self.__invert(self.vocab_dict)
-            
+
     def __invert(self, d):
         return dict([(y,x) for x, y in d.items()])
-        
+
     def encode(self, code):
         sbt = Sbt(self.name_vocab)
         sbt(str2json(code))
-        return [self.vocab_dict[token] for token in sbt.seq]
-        
+        seq = []
+        for token in sbt.seq:
+            if token not in self.vocab_dict:
+                if '_' in token:
+                    token_ = token.split('_')[0]
+                    if token_ not in self.vocab_dict:
+                        raise KeyError('Some structural base not included! Critical!')
+                    seq.append(self.vocab_dict[token_])
+                    continue
+                else:
+                    raise KeyError('Some structural base not included! Critical!')
+            seq.append(self.vocab_dict[token])
+        return seq
+
     def decode(self, seq):
         # to sbt tree
         return ''.join([self.invert_dict[index] for index in seq])
@@ -204,12 +219,30 @@ if __name__ == '__main__':
     # print('--- build vocab..')
     # build_vocab()
 
+    # check valid set
+    # with open('data/valid.pkl', 'rb') as f:
+    #     valid = pickle.load(f)
+    # encoder = Encoder()
+    # for i, (_, code) in enumerate(valid):
+    #     print('valid [%i]' % i, end='\r')
+    #     encoder.decode(encoder.encode(code))
+    # print()
+
+    # check test set
+    # with open('data/test.pkl', 'rb') as f:
+    #     test = pickle.load(f)
+    # encoder = Encoder()
+    # for i, (_, code) in enumerate(test):
+    #     print('test [%i]' % i, end='\r')
+    #     encoder.decode(encoder.encode(code))
+    # print()
+
     # encoding example
-    print('\n> Encode example:\n')
+    # print('\n> Encode example:\n')
     with open('data/train.pkl', 'rb') as f:
         data = pickle.load(f)
-    # Select the 2nd datus as exmaple
-    comment, code = data[0]
+    # Select one datus as exmaple
+    comment, code = data[7755]
     encoder = Encoder()
     print('-------- Original code --------')
     print(code, end='\n\n')
@@ -219,6 +252,8 @@ if __name__ == '__main__':
 
     print('-------- encoded code --------')
     print(encoder.encode(code))
+
+
 
 
 

@@ -47,6 +47,7 @@ def code_parse(filename):
                 # print('parse failed!')
                 continue
         text.append((comment, code))
+    os.system('rm snippet.py')
     print()
 
     print('-- save')
