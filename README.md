@@ -1,5 +1,5 @@
-# Comment2Code
-CS253 Final
+# Code2Comment
+This is a part of CS253 Final project. Mainly the code processing (convert code from plain text to structure-embedded text), and the baseline model (naive element-wise teacher-forcing LSTM). 
 
 ## Parse
 Some raw codes are in python2, or simply cannot be parsed to AST. So check all records if AST feasible, then remove failures. Note python2 code will be converted to python3 and then saved.
