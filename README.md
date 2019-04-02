@@ -38,6 +38,16 @@ This will call `build_vocab` and build the vocabulary.
 * `build_vocab`: read the cleaned train data `data/train.pkl`, do name traverse then SBT traverse, generate respective files `frequently_used_name.pkl` and `vocab_dict.pkl`.
 
 
+## Reference
+* [Awesome Machine Learning On Source Code](https://github.com/src-d/awesome-machine-learning-on-source-code#awesome-machine-learning-on-source-code--)
+* [Deep Code Comment Generation](https://xin-xia.github.io/publication/icpc182.pdf) - SBT algorithm
+* [ast2json](https://pypi.org/project/ast2json/) - ast2json module
+* [2to3](https://docs.python.org/3/library/2to3.html) - python2 source code to python3 (required to clean source code data)
+* [json](https://docs.python.org/3/library/json.html#repeated-names-within-an-object) - json module to dump python dictionary
+* [json diagram](https://vanya.jp.net/vtree/index.html) - online json to tree diagram converter
+* [AST green docs](https://greentreesnakes.readthedocs.io/en/latest/tofrom.html)
+* [Understanding AST](https://www.mattlayman.com/blog/2018/decipher-python-ast/)
+* [stackoverflow python source code](https://github.com/sriniiyer/codenn/tree/master/data/stackoverflow/python) - raw data source
 
 
 
